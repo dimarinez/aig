@@ -128,9 +128,10 @@ export default function Home() {
   // 8. Handle file serving based on environment
   const zipPath = path.join(downloadsDir, "aimpact-temp", `${sanitizedName}.zip`);
   const isVercel = process.env.VERCEL === "1";
-
+  
   let downloadUrl;
   if (isVercel) {
+    // Use Vercel Blob in production
     try {
       const { url } = await put(`${sanitizedName}.zip`, fs.readFileSync(zipPath), {
         access: "public",
@@ -141,6 +142,7 @@ export default function Home() {
       return NextResponse.json({ error: "Failed to upload to Blob storage." }, { status: 500 });
     }
   } else {
+    // Local serving logic
     const finalZipPath = path.join(downloadsDir, `${sanitizedName}.zip`);
     fs.renameSync(zipPath, finalZipPath);
     const publicDir = path.join(process.cwd(), "public", "temp");
